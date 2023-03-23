@@ -16,8 +16,8 @@ import java.util.Map.Entry;
 public class Main {
 	private static File saveDir;
 	private static final String dir = "orders";
-	private static Map<String, String> reestrPN = new HashMap<>();
-	private static Map<String, String> reestrPerem = new HashMap<>();
+	private static final Map<String, String> reestrPN = new HashMap<>();
+	private static final Map<String, String> reestrPerem = new HashMap<>();
 	private static boolean needCreateDir = true;
 	private static int countSavedFiles = 0;
 
@@ -26,8 +26,10 @@ public class Main {
 		List<Record> records = new ArrayList<>();
 		File[] files = new File(".").listFiles();
 
-		Map<String, Set<Tuple2>> mvoKalk = new HashMap<String, Set<Tuple2>>();
-		init(mvos, records, files);
+		Map<String, Set<Tuple2>> mvoKalk = new HashMap<>();
+		if (files != null) {
+			init(mvos, records, files);
+		}
 		if (needCreateDir) {
 			saveDir = new File("./" + dir);
 			saveDir.mkdir();
@@ -73,7 +75,7 @@ public class Main {
 						record.getContent().getData().get(5));
 			}
 			if (Helper.isRecordForPNInfo(record)) {
-				record.setProduct(record.getContent().getData().get(2));
+//				record.setProduct(record.getContent().getData().get(2));
 				record.setPartner(record.getContent().getData().get(4));
 				record.setDocWithDate(record.getContent().getData().get(3));
 				reestrPN.put(record.getDocWithDate(), record.getPartner());
@@ -86,8 +88,8 @@ public class Main {
 			Map<String, Set<Tuple2>> mvoKalk) {
 		Map<String, Set<LocalDate>> mapMvoDate = new HashMap<>();
 		for (String mvo : mvos) {
-			Set<Tuple2> kalksForMap = new HashSet<Tuple2>();
-			Set<LocalDate> setForMapMvoDate = new HashSet<LocalDate>();
+			Set<Tuple2> kalksForMap = new HashSet<>();
+			Set<LocalDate> setForMapMvoDate = new HashSet<>();
 			for (Record r : records) {
 				if (Helper.isRecordForMvo(r) && mvo.equals(r.getMvo())) {
 					kalksForMap.add(new Tuple2(r.getDoc(), r.getDate()));

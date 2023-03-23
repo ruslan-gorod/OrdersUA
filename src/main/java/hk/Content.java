@@ -7,15 +7,14 @@ import org.apache.poi.ss.usermodel.Row;
 
 public class Content {
 
-	private List<String> data;
-	private String delim = "\n";
+	private final List<String> data;
 
 	public Content(Row r) {
 		data = extractListFromRow(r);
 	}
 
 	private List<String> extractListFromRow(Row r) {
-		String[] arr = r.getCell(2).getStringCellValue().split(delim);
+		String[] arr = r.getCell(2).getStringCellValue().split("\n");
 		List<String> data = new ArrayList<>();
 		for (String s : arr) {
 			data.add(s.trim());

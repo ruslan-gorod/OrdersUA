@@ -2,6 +2,7 @@ package hk;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import org.apache.poi.ss.usermodel.Row;
 
@@ -18,10 +19,6 @@ public class Record {
 	private String docWithDate;
 	private String partner;
 	
-    public String getProduct() {
-		return product;
-	}
-
 	public void setProduct(String product) {
 		this.product = product;
 	}
@@ -42,7 +39,7 @@ public class Record {
 		this.partner = partner;
 	}
 
-	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy");
+	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy");
     
 	@Override
 	public String toString() {
@@ -50,28 +47,27 @@ public class Record {
 	}
 	
     public Record (Row r){
-    	setDate(LocalDate.parse(r.getCell(0).getStringCellValue(), formatter));
-    	setDoc(r.getCell(1).getStringCellValue());
-    	setContent(new Content(r));
-    	setDt(r.getCell(3).getStringCellValue());
-    	setKt(r.getCell(4).getStringCellValue());
-    	if (r.getCell(5).toString().trim().length() > 0 ) {
-    		setSum(r.getCell(5).getNumericCellValue());
-    	} else {
-    		setSum(0);
-    	}
-    	if (r.getCell(6).toString().trim().length() > 0 ) {
-    		setCount(r.getCell(6).getNumericCellValue());
-    	} else {
-    		setCount(0);
-    	}
+		try {
+			setDate(LocalDate.parse(r.getCell(0).getStringCellValue(), formatter));
+			setDoc(r.getCell(1).getStringCellValue());
+			setContent(new Content(r));
+			setDt(r.getCell(3).getStringCellValue());
+			setKt(r.getCell(4).getStringCellValue());
+			if (r.getCell(5).toString().trim().length() > 0) {
+				setSum(r.getCell(5).getNumericCellValue());
+			} else {
+				setSum(0);
+			}
+			if (r.getCell(6).toString().trim().length() > 0) {
+				setCount(r.getCell(6).getNumericCellValue());
+			} else {
+				setCount(0);
+			}
+		} catch (DateTimeParseException e) {
+			System.out.println(r.getCell(0));
+		}
     }
     
-    public static boolean isValidRow (Row r) {
-    	
-    	return true;
-    }
-
     public String getDt() {
         return dt;
     }
@@ -110,10 +106,6 @@ public class Record {
 
     public void setCount(double count) {
         this.count = count;
-    }
-
-    public double getSum() {
-        return sum;
     }
 
     public void setSum(double sum) {
@@ -181,9 +173,7 @@ public class Record {
 				return false;
 		} else if (!kt.equals(other.kt))
 			return false;
-		if (Double.doubleToLongBits(sum) != Double.doubleToLongBits(other.sum))
-			return false;
-		return true;
+		return Double.doubleToLongBits(sum) == Double.doubleToLongBits(other.sum);
 	}
 
 	public String getMvo() {
